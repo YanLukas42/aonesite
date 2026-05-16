@@ -338,7 +338,18 @@ function setProgress(pct, msg) {
 
 function showResults(data) {
   dom.progressSection.classList.add('hidden');
-  dom.transcriptionBox.textContent = data.transcricao_diarizada || 'Nenhuma transcrição retornada.';
+  let transcriptionText = '';
+  if (Array.isArray(data.transcricao_diarizada)) {
+    transcriptionText = data.transcricao_diarizada.map(item => {
+      if (typeof item === 'string') return item;
+      const speaker = item.speaker || item.identificador || item.pessoa || 'Voz';
+      const text = item.text || item.fala || item.conteudo || '';
+      return `${speaker}: ${text}`;
+    }).join('\n');
+  } else {
+    transcriptionText = data.transcricao_diarizada || 'Nenhuma transcrição retornada.';
+  }
+  dom.transcriptionBox.textContent = transcriptionText;
 
   const container = document.getElementById('studentsContainer');
   container.innerHTML = '';
