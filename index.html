@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="lib/ffmpeg/ffmpeg.js"></script>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -121,11 +122,11 @@
             rows="6"
             spellcheck="false"
           >Analise o áudio desta aula de inglês. Retorne estritamente um JSON com a seguinte estrutura:
-1. "transcricao_diarizada": string com o texto transcrito separando as falas do professor e dos alunos.
+1. "transcricao_diarizada": array de objetos com "speaker" e "text" para cada fala.
 2. "alunos": um array de objetos. Para cada aluno, forneça:
-  - "nome": string com o nome ou identificador do aluno (ex: "Aluno 1").
-  - "pontos_fracos": array de strings com as deficiências identificadas (gramática, vocabulário, pronúncia).
-  - "exercicios_recomendados": array de strings com sugestões de exercícios práticos.</textarea>
+  - "nome": string com o nome do aluno.
+  - "pontos_fracos": array de strings indicando os erros cometidos. É OBRIGATÓRIO citar a frase exata dita pelo aluno ou o contexto do momento em que ocorreu o erro para justificar a correção.
+  - "exercicios_recomendados": array de strings com sugestões de exercícios práticos criados ESPECIFICAMENTE para corrigir os erros exatos apontados no item anterior.</textarea>
         </div>
 
         <button class="btn btn-primary btn-lg" id="transcribeBtn">
@@ -148,7 +149,7 @@
         <div class="step-item" id="step1">
           <div class="step-circle"><span>1</span></div>
           <div class="step-info">
-            <strong>Lendo Arquivo</strong>
+            <strong>Extração de Áudio</strong>
             <small id="step1Desc">Aguardando…</small>
           </div>
         </div>
@@ -156,7 +157,7 @@
         <div class="step-item" id="step2">
           <div class="step-circle"><span>2</span></div>
           <div class="step-info">
-            <strong>Preparando Envio</strong>
+            <strong>Codificação Base64</strong>
             <small id="step2Desc">Aguardando…</small>
           </div>
         </div>
@@ -214,7 +215,7 @@
   </div><!-- /app-wrapper -->
 
   <footer class="site-footer">
-    <p>Análise via <strong>Gemini 2.5 Flash</strong> · Sua chave nunca sai do navegador · <strong>Privacidade total</strong></p>
+    <p>Processamento local com <strong>FFmpeg.wasm</strong> · Transcrição via <strong>Gemini 2.5 Flash</strong> · Privacidade total</p>
   </footer>
 
   <script type="module" src="app.js"></script>

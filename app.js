@@ -40,6 +40,8 @@ const state = {
   file:   null,
 };
 
+let ffmpeg = null;
+
 // ─── DOM refs ─────────────────────────────────────────────────────────────────
 
 const $ = id => document.getElementById(id);
@@ -165,6 +167,29 @@ function clearFileSelection() {
   dom.dropZone.classList.remove('hidden');
 }
 
+// ─── FFmpeg Loader ────────────────────────────────────────────────────────────
+
+async function getFFmpeg() {
+  if (ffmpeg) return ffmpeg;
+
+  const { FFmpeg } = FFmpegWASM;
+  ffmpeg = new FFmpeg();
+
+  setProgress(5, 'Carregando motor de áudio local…');
+  
+  // Caminhos relativos para funcionar no GitHub Pages e Localhost
+  const baseURL = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');
+  const coreURL = `${baseURL}/lib/ffmpeg/ffmpeg-core.js`;
+  const wasmURL = `${baseURL}/lib/ffmpeg/ffmpeg-core.wasm`;
+
+  await ffmpeg.load({
+    coreURL: coreURL,
+    wasmURL: wasmURL,
+  });
+
+  return ffmpeg;
+}
+
 // ─── Pipeline de Transcrição ──────────────────────────────────────────────────
 
 async function startTranscription() {
@@ -187,23 +212,44 @@ async function startTranscription() {
   dom.transcribeBtn.disabled = true;
 
   try {
-    // ── Passo 1: Ler arquivo ───────────────────────────────────────
+    // ── Passo 1: Extração/Otimização de Áudio ──────────────────────
     setStep(1, 'active');
-    setProgress(15, 'Lendo arquivo…');
-    dom.step1Desc.textContent = `${formatBytes(state.file.size)} carregado.`;
+    setProgress(10, 'Inicializando FFmpeg…');
+    
+    const instance = await getFFmpeg();
+    const ext = getExtension(state.file.name);
+    
+    setProgress(20, 'Lendo arquivo…');
+    const arrayBuffer = await state.file.arrayBuffer();
+    const fileData = new Uint8Array(arrayBuffer);
+    await instance.writeFile('input' + ext, fileData);
+
+    setProgress(30, 'Extraindo áudio (isso pode levar um minuto)…');
+    dom.step1Desc.textContent = 'Processando localmente…';
+    
+    await instance.exec([
+      '-i', 'input' + ext,
+      '-vn',               
+      '-ab', '128k',       
+      '-ar', '44100',      
+      'output.mp3'
+    ]);
+
+    const audioData = await instance.readFile('output.mp3');
+    const audioBlob = new Blob([audioData.buffer], { type: 'audio/mp3' });
+    
     setStep(1, 'done');
+    dom.step1Desc.textContent = 'Áudio extraído!';
 
-    // ── Passo 2: Codificar Base64 ──────────────────────────────────
+    // ── Passo 2: Preparar para API ────────────────────────────────
     setStep(2, 'active');
-    dom.step2Desc.textContent = 'Convertendo para Base64…';
-    setProgress(40, 'Codificando arquivo…');
-
-    const mimeType = resolveMime(state.file);
-    const base64   = await readFileAsBase64(state.file);
-
-    dom.step2Desc.textContent = 'Pronto para envio.';
-    setProgress(60, 'Codificação concluída.');
+    setProgress(50, 'Convertendo para Base64…');
+    
+    const mimeType = 'audio/mp3';
+    const base64   = await readFileAsBase64(audioBlob);
+    
     setStep(2, 'done');
+    dom.step2Desc.textContent = 'Pronto para envio.';
 
     // ── Passo 3: Gemini API ────────────────────────────────────────
     setStep(3, 'active');
@@ -211,10 +257,12 @@ async function startTranscription() {
     setProgress(75, `Aguardando ${GEMINI_MODEL}…`);
 
     let result;
-    if (state.file.size > INLINE_SIZE_LIMIT) {
+    if (audioBlob.size > INLINE_SIZE_LIMIT) {
       dom.step3Desc.textContent = 'Arquivo grande — usando File Upload API…';
       setProgress(78, 'Fazendo upload do arquivo…');
-      const fileUri = await uploadFileToGemini(state.file, mimeType);
+      // For uploading Blob, we convert it to File first to keep compatibility
+      const audioFile = new File([audioBlob], 'audio.mp3', { type: mimeType });
+      const fileUri = await uploadFileToGemini(audioFile, mimeType);
       result = await generateFromFileUri(fileUri, mimeType, prompt);
     } else {
       result = await generateInline(base64, mimeType, prompt);
