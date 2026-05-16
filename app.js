@@ -64,6 +64,8 @@ const dom = {
   fileName:        $('fileName'),
   fileSize:        $('fileSize'),
   clearFile:       $('clearFile'),
+  cefrLevel:       $('cefrLevel'),
+  classFocus:      $('classFocus'),
   promptInput:     $('promptInput'),
   transcribeBtn:   $('transcribeBtn'),
   // Progress
@@ -177,8 +179,12 @@ async function startTranscription() {
     return;
   }
 
-  const prompt = dom.promptInput.value.trim() ||
+  const basePrompt = dom.promptInput.value.trim() ||
     'Analise o áudio. Retorne um JSON com "transcricao_diarizada" e "alunos".';
+  
+  const level = dom.cefrLevel ? dom.cefrLevel.value : 'B1';
+  const focus = dom.classFocus ? dom.classFocus.value : 'Inglês Geral';
+  const prompt = `[CONTEXTO PEDAGÓGICO]: Os alunos desta aula estão no nível CEFR ${level} e o foco principal desta aula foi "${focus}". Ajuste o rigor das correções e crie os exercícios recomendados focados estritamente neste nível e neste objetivo principal.\n\n${basePrompt}`;
 
   dom.filePreview.classList.add('hidden');
   dom.dropZone.classList.add('hidden');

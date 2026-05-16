@@ -114,6 +114,31 @@
         </div>
 
         <div class="prompt-block">
+          <div style="display: flex; gap: 16px; margin-bottom: 16px;">
+            <div style="flex: 1;">
+              <label class="prompt-label" for="cefrLevel">Nível da Turma</label>
+              <select id="cefrLevel" class="text-input" style="cursor: pointer;">
+                <option value="A1">A1 - Iniciante</option>
+                <option value="A2">A2 - Básico</option>
+                <option value="B1" selected>B1 - Intermediário</option>
+                <option value="B2">B2 - Independente</option>
+                <option value="C1">C1 - Proficiente</option>
+                <option value="C2">C2 - Fluente</option>
+              </select>
+            </div>
+            <div style="flex: 1;">
+              <label class="prompt-label" for="classFocus">Foco da Aula</label>
+              <select id="classFocus" class="text-input" style="cursor: pointer;">
+                <option value="Inglês Geral" selected>Inglês Geral</option>
+                <option value="Business English">Business English</option>
+                <option value="Conversação">Conversação</option>
+                <option value="Gramática">Gramática</option>
+                <option value="Preparação para Exame">Preparação para Exame</option>
+                <option value="Pronúncia">Pronúncia</option>
+              </select>
+            </div>
+          </div>
+
           <label class="prompt-label" for="promptInput">Instrução para o Gemini</label>
           <textarea
             id="promptInput"
