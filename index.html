@@ -113,44 +113,29 @@
           <button class="btn btn-icon btn-danger-icon" id="clearFile" title="Remover arquivo" aria-label="Remover arquivo">✕</button>
         </div>
 
-        <div class="prompt-block">
-          <div style="display: flex; gap: 16px; margin-bottom: 16px;">
-            <div style="flex: 1;">
-              <label class="prompt-label" for="cefrLevel">Nível da Turma</label>
-              <select id="cefrLevel" class="text-input" style="cursor: pointer;">
-                <option value="A1">A1 - Iniciante</option>
-                <option value="A2">A2 - Básico</option>
-                <option value="B1" selected>B1 - Intermediário</option>
-                <option value="B2">B2 - Independente</option>
-                <option value="C1">C1 - Proficiente</option>
-                <option value="C2">C2 - Fluente</option>
-              </select>
-            </div>
-            <div style="flex: 1;">
-              <label class="prompt-label" for="classFocus">Foco da Aula</label>
-              <select id="classFocus" class="text-input" style="cursor: pointer;">
-                <option value="Inglês Geral" selected>Inglês Geral</option>
-                <option value="Business English">Business English</option>
-                <option value="Conversação">Conversação</option>
-                <option value="Gramática">Gramática</option>
-                <option value="Preparação para Exame">Preparação para Exame</option>
-                <option value="Pronúncia">Pronúncia</option>
-              </select>
-            </div>
+        <div class="prompt-block" style="display: flex; gap: 16px; margin-bottom: 8px;">
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+            <label class="prompt-label" for="cefrLevel">Nível da Turma</label>
+            <select id="cefrLevel" class="text-input" style="cursor: pointer; width: 100%;">
+              <option value="A1">A1 - Iniciante</option>
+              <option value="A2">A2 - Básico</option>
+              <option value="B1" selected>B1 - Intermediário</option>
+              <option value="B2">B2 - Independente</option>
+              <option value="C1">C1 - Proficiente</option>
+              <option value="C2">C2 - Fluente</option>
+            </select>
           </div>
-
-          <label class="prompt-label" for="promptInput">Instrução para o Gemini</label>
-          <textarea
-            id="promptInput"
-            class="prompt-textarea"
-            rows="6"
-            spellcheck="false"
-          >Analise o áudio desta aula de inglês. Retorne estritamente um JSON com a seguinte estrutura:
-1. "transcricao_diarizada": string com o texto transcrito separando as falas do professor e dos alunos.
-2. "alunos": um array de objetos. Para cada aluno, forneça:
-  - "nome": string com o nome ou identificador do aluno (ex: "Aluno 1").
-  - "pontos_fracos": array de strings com as deficiências identificadas (gramática, vocabulário, pronúncia).
-  - "exercicios_recomendados": array de strings com sugestões de exercícios práticos.</textarea>
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+            <label class="prompt-label" for="classFocus">Foco da Aula</label>
+            <select id="classFocus" class="text-input" style="cursor: pointer; width: 100%;">
+              <option value="Inglês Geral" selected>Inglês Geral</option>
+              <option value="Business English">Business English</option>
+              <option value="Conversação">Conversação</option>
+              <option value="Gramática">Gramática</option>
+              <option value="Preparação para Exame">Preparação para Exame</option>
+              <option value="Pronúncia">Pronúncia</option>
+            </select>
+          </div>
         </div>
 
         <button class="btn btn-primary btn-lg" id="transcribeBtn">

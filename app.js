@@ -66,7 +66,6 @@ const dom = {
   clearFile:       $('clearFile'),
   cefrLevel:       $('cefrLevel'),
   classFocus:      $('classFocus'),
-  promptInput:     $('promptInput'),
   transcribeBtn:   $('transcribeBtn'),
   // Progress
   progressSection: $('progressSection'),
@@ -179,8 +178,12 @@ async function startTranscription() {
     return;
   }
 
-  const basePrompt = dom.promptInput.value.trim() ||
-    'Analise o áudio. Retorne um JSON com "transcricao_diarizada" e "alunos".';
+  const basePrompt = `Analise o áudio desta aula de inglês. Retorne estritamente um JSON com a seguinte estrutura:
+1. "transcricao_diarizada": array de objetos com "speaker" e "text" para cada fala.
+2. "alunos": um array de objetos. Para cada aluno, forneça:
+  - "nome": string com o nome do aluno.
+  - "pontos_fracos": array de strings indicando os erros cometidos. É OBRIGATÓRIO citar a frase exata dita pelo aluno ou o contexto do momento em que ocorreu o erro para justificar a correção.
+  - "exercicios_recomendados": array de strings com sugestões de exercícios práticos criados ESPECIFICAMENTE para corrigir os erros exatos apontados no item anterior.`;
   
   const level = dom.cefrLevel ? dom.cefrLevel.value : 'B1';
   const focus = dom.classFocus ? dom.classFocus.value : 'Inglês Geral';

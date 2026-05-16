@@ -270,6 +270,13 @@ body {
 
 .text-input::placeholder { color: var(--text-dim); }
 
+select.text-input option {
+  background-color: #0f172a;
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+}
+
 /* ─── Buttons ─── */
 .btn {
   display: inline-flex; align-items: center; gap: 7px;
